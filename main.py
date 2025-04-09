@@ -37,5 +37,5 @@ rest_metadata_df = metadata_extractor.extract_metadata()
 merged_metadata_df = pd.concat([stress_metadata_df, rest_metadata_df], ignore_index=True)
 
 # Save the merged dataFrame to a CSV file
-merged_metadata_df.to_csv("output/merged_metadata_cmr.csv", index=False)
+merged_metadata_df.to_csv("output/test_dataset.csv", index=False)
 # print("CSV saved: output/merged_metadata_cmr.csv")

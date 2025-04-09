@@ -19,3 +19,8 @@ Install the dependencies using pip:
 
 ```bash
 pip install pydicom pandas
+```
+
+## Author
+Kostas Moschonas
+02/04/2025
