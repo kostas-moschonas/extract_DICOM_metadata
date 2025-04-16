@@ -18,9 +18,8 @@ keys_df = pd.read_csv("keys/keys_mava_27.csv")
 # rename the column containing the anonymised study IDs in main data to "study_id"
 main_data.rename(columns={"mrn": "study_id"}, inplace=True)
 
-# Perform the join on the common column (e.g., 'StudyID')
-# Replace 'common_column' with the actual column name used for joining
+# merge dataframes on study_id
 merged_df = main_data.merge(keys_df, on="study_id", how="left")
 
-# Save the resulting DataFrame to a new CSV file
+# save
 merged_df.to_csv("output/mavacamten_mrns_20250415.csv", index=False)
