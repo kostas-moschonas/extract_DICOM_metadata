@@ -1,12 +1,12 @@
 # DICOM Metadata Extraction
 
-This project provides a Python module for extracting metadata from DICOM files. It includes functionality to search for DICOM files based on their `SeriesDescription`, extract relevant metadata, and save the extracted data to a CSV file.
+This project provides a Python module for extracting metadata from DICOM files. It includes functionality to search for DICOM files based on their `SeriesDescription`, extract and save relevant metadata. 
 
 ## Features
 
 - **Search DICOM Files**: Locate DICOM files in directories or zipped folders based on a specific `SeriesDescription`.
 - **Extract Metadata**: Retrieve metadata such as `PatientID`, `PatientBirthDate`, `StudyDate`, `SeriesTime`, `DeviceSerialNumber`, and `SeriesDescription`.
-- **Save to CSV**: Save the extracted metadata to a CSV file for further analysis.
+- **Save to CSV**: Save the extracted metadata to a CSV file.
 
 ## Requirements
 
