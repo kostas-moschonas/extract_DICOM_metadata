@@ -5,7 +5,7 @@ This module provides a class `MetadataExtraction` that can find DICOM files base
 extract metadata from these files, and save the metadata to a CSV file.
 
 Author: Kostas Moschonas
-Date: 02/04/2025
+Date: 23/09/2025
 """
 import os
 import zipfile
@@ -91,37 +91,45 @@ class MetadataExtraction:
             print(f"No DICOM file with Series Description containing '{search_string}' found in any zip file in folder {zip_folder_path}")
         return dicom_files
 
-    def find_dicom_in_folder_by_series_description(self, folder_path: str, search_string: str):
-                """
-                Finds DICOM files in each folder within the specified folder
-                whose Series Description contains the given search string. Stops after finding
-                one correct DICOM file for each unique pair of PatientID and StudyDate.
-                """
-                dicom_files = {}
-                processed_study_keys = set()  # Track (PatientID, StudyDate) pairs
+    def find_dicom_in_folder_by_series_description(self, folder_path: str, filter_function=None):
+        """
+        Finds DICOM files in the specified folder whose Series Description matches the criteria
+        defined by the provided filter_function. Stops after finding one correct DICOM file
+        for each unique pair of PatientID and StudyDate.
 
-                for root, dirs, files in os.walk(folder_path):
-                    for file in files:
-                        file_path = os.path.join(root, file)
-                        try:
-                            dicom_file = pydicom.dcmread(file_path)
-                            series_description = dicom_file.get('SeriesDescription', 'NA')
-                            if search_string.lower() in series_description.lower():
-                                patient_id = dicom_file.get('PatientID', 'NA')
-                                study_date = dicom_file.get('StudyDate', 'NA')
-                                study_key = (patient_id, study_date)
-                                if study_key not in processed_study_keys:
-                                    print(f"Found DICOM file with SeriesDescription containing '{search_string}': {file_path}")
-                                    dicom_files[file_path] = dicom_file
-                                    processed_study_keys.add(study_key)
-                                    continue
-                        except pydicom.errors.InvalidDicomError as e:
-                            print(f"Error reading DICOM file {file_path}: {e}")
-                            continue
+        Args:
+            folder_path (str): The path to the folder to search for DICOM files.
+            filter_function (callable, optional): A function that takes a Series Description as input
+                and returns True if the file should be included, False otherwise.
 
-                if not dicom_files:
-                    print(f"No DICOM file with Series Description containing '{search_string}' found in folder {folder_path}")
-                return dicom_files
+        Returns:
+            dict: A dictionary where keys are file paths and values are DICOM files.
+        """
+        dicom_files = {}
+        processed_study_keys = set()  # Track (PatientID, StudyDate) pairs
+
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                try:
+                    dicom_file = pydicom.dcmread(file_path)
+                    series_description = dicom_file.get('SeriesDescription', 'NA')
+                    if filter_function and not filter_function(series_description):
+                        continue
+                    patient_id = dicom_file.get('PatientID', 'NA')
+                    study_date = dicom_file.get('StudyDate', 'NA')
+                    study_key = (patient_id, study_date)
+                    if study_key not in processed_study_keys:
+                        print(f"Found DICOM file with SeriesDescription matching filter: {file_path}")
+                        dicom_files[file_path] = dicom_file
+                        processed_study_keys.add(study_key)
+                except pydicom.errors.InvalidDicomError as e:
+                    print(f"Error reading DICOM file {file_path}: {e}")
+                    continue
+
+        if not dicom_files:
+            print(f"No DICOM files matching the filter found in folder {folder_path}")
+        return dicom_files
 
     # def find_dicom_in_folder_by_series_description(self, folder_path: str, search_string: str):
     #     """
