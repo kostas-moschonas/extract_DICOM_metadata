@@ -5,7 +5,7 @@ This script uses the `MetadataExtraction` class to find DICOM files based on the
 extract metadata, and save the metadata to a CSV file.
 
 Author: Kostas Moschonas
-Date: 23/09/2025
+Updated: 27-11-2025
 """
 
 from extract_dicom_metadata import MetadataExtraction
@@ -40,10 +40,10 @@ def is_perf_only_sequence(series_description):
 # USER DEFINED VARIABLES ----
 ## Folder paths, choose appropriate methods below for zipped and non-zipped folders accordingly
 # zip_folder_path = "input/zipped"
-folder_path = "D:/ApHCM/all_studies_not_anonymised"
+folder_path = r"D:\cmrs\mavacamten_study\test"
 
 # Path and name of the output CSV file
-output_csv_path = "output/all_ahcm_non_anonymised_2.csv"
+output_csv_path = "output/test.csv"
 
 # RUNNING CODE ----
 # Create an instance of MetadataExtraction
