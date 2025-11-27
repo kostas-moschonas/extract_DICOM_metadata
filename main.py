@@ -17,25 +17,33 @@ import re
 # rest_sequences = "rest"
 
 # More thorough filtering for series descriptions
+# More thorough filtering for series descriptions
 def is_stress_sequence(series_description):
-    """Check if the series description contains both stress and _perf,
+    """Check if the series description contains both stress and perf,
     to avoid picking other stress sequences like stress cine, etc."""
-    normalized_description = re.sub(r'\s+', ' ', series_description.lower())
-    return "stress" in normalized_description and "_perf" in normalized_description
+    # Normalize by converting to lower case and removing spaces and underscores
+    normalized_description = re.sub(r'[\s_]+', '', series_description.lower())
+    return "stress" in normalized_description and "perf" in normalized_description
 
 def is_rest_sequence(series_description):
-    """Check if the series description contains both rest and _perf,
+    """Check if the series description contains both rest and perf,
         to avoid picking other rest sequences inadvertedly labelled rest"""
-    normalized_description = re.sub(r'\s+', ' ', series_description.lower())
-    return "rest" in normalized_description and "_perf" in normalized_description
+    # Normalize by converting to lower case and removing spaces and underscores
+    normalized_description = re.sub(r'[\s_]+', '', series_description.lower())
+    return "rest" in normalized_description and "perf" in normalized_description
+
+def is_perf_only_sequence(series_description):
+    """Check if the series description contains perf, but not stress or rest."""
+    normalized_description = re.sub(r'[\s_]+', '', series_description.lower())
+    return "perf" in normalized_description and "stress" not in normalized_description and "rest" not in normalized_description
 
 # USER DEFINED VARIABLES ----
 ## Folder paths, choose appropriate methods below for zipped and non-zipped folders accordingly
 # zip_folder_path = "input/zipped"
-folder_path = "D:/ApHCM/cmrs_aphcm_mainlist"
+folder_path = "D:/ApHCM/all_studies_not_anonymised"
 
 # Path and name of the output CSV file
-output_csv_path = "C:/Users/kmosc/OneDrive - NHS/_RESEARCH_REPOSITORIES/ApHCM_REPO/input/raw_data/cmr_analysis/cmrs_aphcm_allstudies_metadata2.csv"
+output_csv_path = "output/all_ahcm_non_anonymised_2.csv"
 
 # RUNNING CODE ----
 # Create an instance of MetadataExtraction
@@ -50,6 +58,12 @@ stress_dicom_files = metadata_extractor.find_dicom_in_folder_by_series_descripti
     folder_path, filter_function=is_stress_sequence
 )
 
+# If no stress files found, search for "perf" only sequences
+if not stress_dicom_files:
+    stress_dicom_files = metadata_extractor.find_dicom_in_folder_by_series_description(
+        folder_path, filter_function=is_perf_only_sequence
+    )
+
 metadata_extractor.dicom_files = stress_dicom_files
 
 # Extract metadata
@@ -63,6 +77,11 @@ stress_metadata_df = metadata_extractor.extract_metadata()
 rest_dicom_files = metadata_extractor.find_dicom_in_folder_by_series_description(
     folder_path, filter_function=is_rest_sequence
 )
+
+if not rest_dicom_files:
+    rest_dicom_files = metadata_extractor.find_dicom_in_folder_by_series_description(
+        folder_path, filter_function=is_perf_only_sequence
+    )
 
 metadata_extractor.dicom_files = rest_dicom_files
 
