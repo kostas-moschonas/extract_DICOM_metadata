@@ -76,7 +76,6 @@ Install dependencies:
     df.rename(columns={ 'patient_ID': 'mrn' }, inplace=True)
 
 - The extractor prints progress and warnings (e.g., missing `PatientID`) to help trace execution.
-- No change to `main.py` is required unless it explicitly expects `mrn` instead of `patient_ID`.
 
 ## Author
 
